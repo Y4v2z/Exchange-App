@@ -7,6 +7,36 @@ const listTwo = document.getElementById("listTwo");
 const amount = document.getElementById("amount");
 const calculate = document.getElementById("calculate");
 const result = document.getElementById("result");
+const inputs = document.querySelectorAll(".input");
+const currencyTypeOne = currencyOne.value;
+const currencyTypetwo = currencyTwo.value;
+const exchangeAmount = amount.value;
+inputs.forEach(input => {
+    input.addEventListener("keydown", handleEnterKey())
+})
+function handleEnterKey(e) {
+    let array = [currencyTypeOne, currencyTypetwo, exchangeAmount];
+    for (let value of array) {
+        if (e.key === "Enter") {
+            addEventCalculateBtn(value)
+        }
+    }
+};
+// Yada böyle tek tek yapmaya çalıştım ama ikisi de olmadı
+// function handleEnterKey(e) {
+//     const currencyTypetwo = currencyOne.value;
+//     if (e.key === "Enter") {
+//         addEventCalculateBtn(currencyTypetwo)
+//     }
+// }
+// function handleEnterKey(e) {
+//     const exchangeAmount = currencyOne.value;
+//     if (e.key === "Enter") {
+//         addEventCalculateBtn(exchangeAmount)
+//     }
+// };
+
+
 async function getCodes() {
     try {
         const response = await fetch(url + "/codes");
@@ -23,31 +53,32 @@ async function getCodes() {
         listTwo.innerHTML = option;
     }
     catch (err) {
-
     }
 };
 getCodes();
-calculate.addEventListener("click", () => {
-    const currencyTypeOne = currencyOne.value;
-    const currencyTypetwo = currencyTwo.value;
-    const exchangeAmount = amount.value;
-    fetch(url + "/latest/" + currencyTypeOne)
-        .then(res => res.json())
-        .then(data => {
-            console.log(data);
-            const total = (data.conversion_rates[currencyTypetwo] * exchangeAmount).toFixed(3);
-            result.innerHTML = `
-            <div class="card border-primary">
-                <div class="card-body text-center fs-2">
-                    ${exchangeAmount} ${currencyTypeOne} = ${total} ${currencyTypetwo}
+function addEventCalculateBtn() {
+    calculate.addEventListener("click", () => {
+        const currencyTypeOne = currencyOne.value;
+        const currencyTypetwo = currencyTwo.value;
+        const exchangeAmount = amount.value;
+        fetch(url + "/latest/" + currencyTypeOne)
+            .then(res => res.json())
+            .then(data => {
+                const total = (data.conversion_rates[currencyTypetwo] * exchangeAmount).toFixed(3);
+                result.innerHTML = `
+                <div class="card border-primary">
+                    <div class="card-body text-center fs-2">
+                        ${exchangeAmount} ${currencyTypeOne} = ${total} ${currencyTypetwo}
+                    </div>
+                    <div class="card-footer text-muted text-center">
+                        1 ${currencyTypeOne}= ${data.conversion_rates[currencyTypetwo]} ${currencyTypetwo}
+                    </div>
                 </div>
-                <div class="card-footer text-muted text-center">
-                    1 ${currencyTypeOne}= ${data.conversion_rates[currencyTypetwo]} ${currencyTypetwo}
-                </div>
-            </div>
-            `;
-        })
-});
+                `;
+            })
+    });
+}
+addEventCalculateBtn();
 // fetch(url + "/codes")
 //     .then(res => res.json())
 //     .then(data => {
